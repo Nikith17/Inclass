@@ -1,0 +1,36 @@
+version: '3.8'  # Ensure you have the correct version
+
+services:
+  server:
+    build:
+      context: .
+    ports:
+      - "3000:3000"
+    command: ["node", "src/index.js"]
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: nikitha1799  
+      POSTGRES_DB: labonedb
+    depends_on:
+      db:
+        condition: service_healthy  # Conditional dependency on db service being healthy
+
+  db:
+    image: postgres:latest  # Use the latest PostgreSQL image
+    environment:
+      POSTGRES_DB: labonedb
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: nikitha1799  
+    volumes:
+      - db-data:/var/lib/postgresql/data  # Create a volume for data persistence
+    ports:
+      - "5432:5432"  # Expose port 5432
+    healthcheck:  # Set health check configuration
+      test: ["CMD", "pg_isready"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  db-data:  # Define the volume for PostgreSQL data
